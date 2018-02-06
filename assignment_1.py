@@ -22,6 +22,13 @@ def ortho_transform(mean, covariance_matrix):
 	width = math.sqrt(eig_val[0]) * 2
 	height = math.sqrt(eig_val[1]) * 2
 
+	if (eig_vect[0][0] and eig_vect[1][0] < 0):
+		eig_vect[0][0] = eig_vect[0][0] * -1.0
+		eig_vect[1][0] = eig_vect[1][0] * -1.0
+	elif (eig_vect[0][1] and eig_vect[1][1] < 0):
+		eig_vect[0][1] = eig_vect[0][1] * -1.0
+		eig_vect[1][1] = eig_vect[1][1] * -1.0
+
 	ells = Ellipse((x, y), width, height, angle=ang)
 
 
@@ -35,10 +42,18 @@ def ortho_transform(mean, covariance_matrix):
 	return eig_val, eig_vect
 
 def whitening(eig_val, eig_vect, mean):
+	# Transpose eigenvectors
+	eig_vect[[[0][0],[1][0]]] = eig_vect[[[1][0],[0][0]]] # double check that this works
+	print eig_vect
 
+	print np.array([[1 / math.sqrt(eig_val[0]), 0], [0, 1 / math.sqrt(eig_val[1])]])
 	A = np.dot(np.array([[1 / math.sqrt(eig_val[0]), 0], [0, 1 / math.sqrt(eig_val[1])]]), eig_vect)
+	
+
+
+	#print A
 	new_mean = np.dot(A, mean)
-	print new_mean
+	#print new_mean
 	pass
 
 # Returns the sample means prototypes
@@ -61,17 +76,19 @@ def minimum_euclidean_distance(z_1, z_2):
 	# Get equation of line in x2=m*x1+b
 	x2 = solve(g_1 - g_2, x2)
 	x1 = np.linspace(0,1,10)
-
+	
+	print x2[0].as_coefficients_dict()
 	x2 = np.array(x2)
 
+	
 	# # # # # # # HOW TO PLOT
 
-	# plt.plot(x1,x2)
-	# plt.show()
+#	plt.plot(x1,x2)
+#	plt.show()
 
-	# solved = solve([Eq(g_1), Eq(-g_2)], [x1, x2])
-	# x_1 = solved[x1]
-	# x_2 = solved[x2]
+#	solved = solve([Eq(g_1), Eq(-g_2)], [x1, x2])
+#	x_1 = solved[x1]
+#	x_2 = solved[x2]
 
 
 
@@ -91,8 +108,8 @@ u_A = np.array([[5,10]]).T
 sig_A = np.array([[8,0],[0,4]])
 
 N_A, u_A = correlation(N_A, u_A)
-#ortho_transform(u_A, sig_A)
-plt.scatter(N_A[:,0], N_A[:,1])
+ortho_transform(u_A, sig_A)
+#plt.scatter(N_A[:,0], N_A[:,1])
 
 
 
@@ -102,10 +119,11 @@ u_B = np.array([[10,15]]).T
 sig_B = np.array([[8,0],[0,4]])
 
 N_B, u_B = correlation(N_B, u_B)
-#ortho_transform(u_B, sig_B)
-plt.scatter(N_B[:,0], N_B[:,1])
+ortho_transform(u_B, sig_B)
+#plt.scatter(N_B[:,0], N_B[:,1])
 
-#plt.show()
+plt.show()
+
 
 # # # Case 2 # # #
 # Class C
@@ -138,24 +156,24 @@ ortho_transform(u_E, sig_E)
 plt.scatter(N_E[:,0], N_E[:,1])
 '''
 
-'''
 
 # MED Test
 N_test1 = np.array([[2, 1],[3,2],[2,7],[5,2]])
 N_test2 = np.array([[3, 3],[4,4],[3,9],[6,4]])
 
 minimum_euclidean_distance(sample_means(N_test1), sample_means(N_test2))
-'''
+
 
 
 # GED Test
-
+'''
 u_GED = np.array([[0, 10]]).T
 S_GED = np.array([[16, -12],[-12, 34]])
-eig_val_GED, eig_vect_GED = ortho_transform(u_GED, S_GED)
 
+eig_val_GED, eig_vect_GED = ortho_transform(u_GED, S_GED)
+print eig_val_GED, eig_vect_GED
 
 whitening(eig_val_GED, eig_vect_GED, u_GED)
-
+'''
 
 # plt.show()
