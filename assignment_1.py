@@ -76,7 +76,7 @@ def minimum_euclidean_distance(z_1, z_2):
 	# Get equation of line in x2=m*x1+b
 	x2 = solve(g_1 - g_2, x2)
 	x1 = np.linspace(0,1,10)
-	
+
 	print x2[0].as_coefficients_dict()
 	x2 = np.array(x2)
 
